@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DEREL</title>
+<style>
+:root{--bg:#10243e;--fg:#fff;--ac:#ffc53d;--card:#1b3a5f}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--fg);font-family:Verdana,sans-serif;display:flex;flex-direction:column}
+#nav{position:fixed;top:8px;right:8px;display:flex;gap:6px;z-index:9}#nav button{padding:8px 12px;font-size:.8rem}
+main{padding-top:56px!important;flex:1;display:flex;flex-direction:column;padding:20px;max-width:720px;width:100%;margin:auto}
+h1{font-size:clamp(2.2rem,9vw,4rem);margin:.3em 0;letter-spacing:.04em}
+h2{font-size:1.3rem;font-weight:400;margin:.3em 0 1em}
+.mid{flex:1;display:flex;flex-direction:column;justify-content:center;gap:12px}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+button,select,input,textarea{font:inherit;border-radius:10px;border:2px solid var(--ac);padding:14px;background:var(--card);color:var(--fg)}
+button{cursor:pointer;font-weight:bold}
+button:hover,button:focus-visible{background:var(--ac);color:#10243e;outline:none}
+.row button{flex:1;min-width:110px}
+.bot{margin-top:auto;padding-top:20px}
+.dev{align-self:flex-end;font-size:.75rem;padding:6px 10px;border-style:dashed}
+.back{align-self:flex-start;margin-bottom:10px}
+.box{background:var(--card);border-radius:10px;padding:14px;margin:8px 0;white-space:pre-wrap}
+.big{font-size:3rem;text-align:center;font-variant-numeric:tabular-nums}
+.ico{font-size:3rem;text-align:center}
+.spin{width:50px;height:50px;border:6px solid var(--card);border-top-color:var(--ac);border-radius:50%;animation:s 1s linear infinite;margin:auto}
+@keyframes s{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.spin{animation:none}}
+.bar{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.bar button{padding:14px 2px;font-size:.8rem}
+label{display:block;margin-top:8px}
+input,select,textarea{width:100%}
+</style></head><body><main id="app"></main>
+<script>
+const L={
+en:{set:"SETTINGS",chg:"Please Change a Language!",ms:"Please Select Application Mode!",stu:"Student",tea:"Teacher",dev:"Developer Options",issue:"Select your condition",ph:"Write your condition here!",hd:"Hearing Impairment / Loss",wait:"THANK YOU! Options are being set. Please wait...",wel:"Welcome!",pick:"Select your option!",qr:"QR",time:"TIME",help:"?",when:"WHEN",health:"HEALTH",back:"← Back",
+qrt:"Scan a QR code",qrs:"Start camera",qrn:"Camera or QR reading is not supported in this browser.",
+lesson:"Lesson duration (min)",brk:"Break duration (min)",timer:"Timer",sw:"Stopwatch",start:"Start",stop:"Stop",reset:"Reset",min:"Minutes",
+guide:"User guide",gt:"1) Choose a language and mode.\n2) QR: scan codes.\n3) TIME: lesson, break, timer, stopwatch.\n4) WHEN: dates, bus times, speech to text.\n5) HEALTH: appointments, medicine log, general info.",today:"Today",hist:"Today in history: look up this date in an encyclopedia for events.",
+date:"Pick a date",bus:"Bus trip",bl:"Line name",bt:"Departure time",addb:"Save bus",left:"Time left",nob:"No bus saved",
+sp:"Speech to text",spn:"Speech recognition is not supported here. Try Chrome.",listen:"Listen",clear:"Clear",
+appt:"Appointment",ad:"Date and time",an:"Doctor / place",adda:"Add",med:"Medicine tracker",mn:"Medicine name",took:"Mark as taken now",gen:"General information",age:"Age",w:"Weight (kg)",h:"Height (cm)",sex:"Sex",bl2:"Blood group",save:"Save",saved:"Saved",
+devt:"Developer Options",devx:"DEREL: Electronic Board for Hearing-Impaired Students.\nSingle file, runs on onlinegdb.com (HTML/JS) and GitHub Pages.\nData is kept only in this browser.",reset2:"Clear all data"},
+tr:{set:"AYARLAR",chg:"Lütfen Bir Dil Seçiniz!",ms:"Lütfen Uygulama Modu Seçiniz!",stu:"Öğrenci",tea:"Öğretmen",dev:"Geliştirici Seçenekleri",issue:"Rahatsızlığınızı seçiniz",ph:"Rahatsızlığınızı buraya yazınız!",hd:"Duyma ve İşitme Engeli / Kaybı",wait:"TEŞEKKÜRLER! Seçenekler ayarlanıyor. Lütfen bekleyiniz...",wel:"Hoş Geldiniz!",pick:"Seçeneğinizi seçiniz!",qr:"QR",time:"SÜRE",help:"?",when:"NE ZAMAN",health:"SAĞLIK",back:"← Geri",
+qrt:"QR kod okut",qrs:"Kamerayı başlat",qrn:"Bu tarayıcı kamera veya QR okumayı desteklemiyor.",
+lesson:"Ders süresi (dk)",brk:"Teneffüs süresi (dk)",timer:"Zamanlayıcı",sw:"Kronometre",start:"Başlat",stop:"Durdur",reset:"Sıfırla",min:"Dakika",
+guide:"Kullanım kılavuzu",gt:"1) Dil ve mod seçin.\n2) QR: kod okutun.\n3) SÜRE: ders, teneffüs, zamanlayıcı, kronometre.\n4) NE ZAMAN: tarih, otobüs saati, konuşmayı yazıya çevirme.\n5) SAĞLIK: randevu, ilaç takibi, genel bilgiler.",today:"Bugün",hist:"Tarihte bugün: bu tarihte olan olaylar için bir ansiklopediye bakın.",
+date:"Tarih seçin",bus:"Otobüs seyahati",bl:"Hat adı",bt:"Kalkış saati",addb:"Otobüsü kaydet",left:"Kalan süre",nob:"Kayıtlı otobüs yok",
+sp:"Konuşmayı yazıya çevir",spn:"Bu tarayıcı konuşma tanımayı desteklemiyor. Chrome deneyin.",listen:"Dinle",clear:"Temizle",
+appt:"Randevu",ad:"Tarih ve saat",an:"Doktor / yer",adda:"Ekle",med:"İlaç takibi",mn:"İlaç adı",took:"Şimdi aldım",gen:"Genel bilgiler",age:"Yaş",w:"Kilo (kg)",h:"Boy (cm)",sex:"Cinsiyet",bl2:"Kan grubu",save:"Kaydet",saved:"Kaydedildi",
+devt:"Geliştirici Seçenekleri",devx:"DEREL: Duyma Engelli Öğrenciler için Elektronik Levha.\nTek dosya; onlinegdb.com (HTML/JS) ve GitHub Pages'te çalışır.\nVeriler yalnızca bu tarayıcıda tutulur.",reset2:"Tüm verileri sil"},
+de:{set:"EINSTELLUNGEN",chg:"Bitte Sprache wählen!",ms:"Bitte App-Modus wählen!",stu:"Schüler",tea:"Lehrer",dev:"Entwickleroptionen",issue:"Wählen Sie Ihre Beeinträchtigung",ph:"Beeinträchtigung hier eintragen!",hd:"Hörbehinderung / Hörverlust",wait:"DANKE! Optionen werden eingerichtet. Bitte warten...",wel:"Willkommen!",pick:"Wählen Sie Ihre Option!",qr:"QR",time:"ZEIT",help:"?",when:"WANN",health:"GESUNDHEIT",back:"← Zurück",
+qrt:"QR-Code scannen",qrs:"Kamera starten",qrn:"Kamera oder QR-Lesen wird in diesem Browser nicht unterstützt.",
+lesson:"Unterrichtsdauer (Min)",brk:"Pausendauer (Min)",timer:"Timer",sw:"Stoppuhr",start:"Start",stop:"Stopp",reset:"Zurücksetzen",min:"Minuten",
+guide:"Anleitung",gt:"1) Sprache und Modus wählen.\n2) QR: Codes scannen.\n3) ZEIT: Unterricht, Pause, Timer, Stoppuhr.\n4) WANN: Datum, Bus, Sprache zu Text.\n5) GESUNDHEIT: Termine, Medikamente, Allgemeines.",today:"Heute",hist:"Heute in der Geschichte: Ereignisse zu diesem Datum finden Sie in einer Enzyklopädie.",
+date:"Datum wählen",bus:"Busfahrt",bl:"Linie",bt:"Abfahrtszeit",addb:"Bus speichern",left:"Verbleibend",nob:"Kein Bus gespeichert",
+sp:"Sprache zu Text",spn:"Spracherkennung wird hier nicht unterstützt. Versuchen Sie Chrome.",listen:"Zuhören",clear:"Löschen",
+appt:"Termin",ad:"Datum und Uhrzeit",an:"Arzt / Ort",adda:"Hinzufügen",med:"Medikamentenplan",mn:"Medikament",took:"Jetzt eingenommen",gen:"Allgemeine Angaben",age:"Alter",w:"Gewicht (kg)",h:"Größe (cm)",sex:"Geschlecht",bl2:"Blutgruppe",save:"Speichern",saved:"Gespeichert",
+devt:"Entwickleroptionen",devx:"DEREL: Elektronische Tafel für hörgeschädigte Schüler.\nEine Datei, läuft auf onlinegdb.com (HTML/JS) und GitHub Pages.\nDaten bleiben nur in diesem Browser.",reset2:"Alle Daten löschen"}};
+let lang="en",mode="",tm=null,sw={t:0,on:0,id:null};
+const $=s=>document.querySelector(s),T=k=>L[lang][k],app=$("#app");
+const ST={get(k,d){try{return JSON.parse(localStorage.getItem("derel_"+k))??d}catch(e){return d}},set(k,v){try{localStorage.setItem("derel_"+k,JSON.stringify(v))}catch(e){}}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const back=to=>`<button class="back" onclick="${to}">${T("back")}</button>`;
+function clr(){clearInterval(tm);clearInterval(sw.id);if(window.rec)try{rec.stop()}catch(e){}if(window.cam)cam.getTracks().forEach(t=>t.stop());window.cam=null}
+function show(h){clr();app.innerHTML=h;document.documentElement.lang=lang}
+function setLang(c){lang=c;s_mode()}
+function s_lang(){show(`<h1>${L.en.set}</h1><h2>${L.en.chg}</h2><div class="mid"></div><div class="row bot"><button onclick="setLang('tr')">Türkçe</button><button onclick="setLang('en')">English</button><button onclick="setLang('de')">Deutch</button></div>`)}
+function s_mode(){show(`<h1>${T("set")}</h1><h2>${T("ms")}</h2><div class="mid"><button onclick="mode='student';s_issue()">${T("stu")}</button><button onclick="mode='teacher';s_issue()">${T("tea")}</button></div><button class="dev" onclick="s_dev()">${T("dev")}</button>`)}
+function s_issue(){show(`${back("s_mode()")}<h2>${T("issue")}</h2><div class="mid"><button onclick="s_wait()">${T("hd")}</button><div class="ico">✎</div><textarea id="own" rows="2" placeholder="${T("ph")}"></textarea><button onclick="s_wait()">OK</button></div>`)}
+function s_wait(){const o=$("#own");if(o)ST.set("issue",o.value);show(`<div class="mid"><div class="spin"></div><h2 style="text-align:center" role="status">${T("wait")}</h2></div>`);setTimeout(s_home,2500)}
+function s_home(){show(`<h1>${T("wel")}</h1><h2>${T("pick")}</h2><div class="mid"></div><div class="bar"><button onclick="s_qr()">▣<br>${T("qr")}</button><button onclick="s_time()">⏱<br>${T("time")}</button><button onclick="s_help()">?<br>&nbsp;</button><button onclick="s_when()">📅<br>${T("when")}</button><button onclick="s_health()">♥<br>${T("health")}</button></div>`)}
+function s_dev(){show(`${back("s_mode()")}<h1 style="font-size:1.8rem">${T("devt")}</h1><div class="box">${esc(T("devx"))}</div><button onclick="localStorage.clear();s_lang()">${T("reset2")}</button>`)}
+function s_qr(){show(`${back("s_home()")}<h2>${T("qrt")}</h2><video id="v" playsinline muted style="width:100%;border-radius:10px"></video><button onclick="qrStart()">${T("qrs")}</button><div class="box" id="qo" aria-live="polite"></div>`)}
+async function qrStart(){if(!("BarcodeDetector"in window)||!navigator.mediaDevices){$("#qo").textContent=T("qrn");return}
+try{const d=new BarcodeDetector({formats:["qr_code"]});cam=await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"}});const v=$("#v");v.srcObject=cam;await v.play();
+tm=setInterval(async()=>{try{const r=await d.detect(v);if(r.length){const x=r[0].rawValue;$("#qo").innerHTML=/^https?:\/\//.test(x)?`<a style="color:#ffc53d" href="${esc(x)}" target="_blank" rel="noopener">${esc(x)}</a>`:esc(x)}}catch(e){}},500)}catch(e){$("#qo").textContent=T("qrn")}}
+function fmt(s){s=Math.max(0,s);return String(Math.floor(s/60)).padStart(2,"0")+":"+String(Math.floor(s%60)).padStart(2,"0")}
+function s_time(){show(`${back("s_home()")}<label>${T("lesson")}<input id="ls" type="number" value="40"></label><label>${T("brk")}<input id="bk" type="number" value="10"></label>
+<div class="row"><button onclick="cd($('#ls').value*60)">${T("lesson")}</button><button onclick="cd($('#bk').value*60)">${T("brk")}</button></div>
+<label>${T("timer")} (${T("min")})<input id="tn" type="number" value="5"></label><button onclick="cd($('#tn').value*60)">${T("timer")} ▶</button>
+<div class="big" id="d" role="timer">00:00</div>
+<h2>${T("sw")}</h2><div class="row"><button onclick="swgo()">${T("start")}/${T("stop")}</button><button onclick="swr()">${T("reset")}</button></div><div class="big" id="sw">00:00.0</div>`);sw={t:0,on:0,id:null}}
+function cd(sec){clearInterval(tm);let e=Date.now()+sec*1000;const f=()=>{const r=Math.round((e-Date.now())/1000);$("#d").textContent=fmt(r);if(r<=0){clearInterval(tm);if(navigator.vibrate)navigator.vibrate([300,150,300]);document.body.style.background="#7a1f1f";setTimeout(()=>document.body.style.background="",1500)}};f();tm=setInterval(f,250)}
+function swgo(){if(sw.on){sw.on=0;sw.t+=Date.now()-sw.s;clearInterval(sw.id)}else{sw.on=1;sw.s=Date.now();sw.id=setInterval(swu,100)}}
+function swu(){const t=sw.t+(sw.on?Date.now()-sw.s:0);$("#sw").textContent=fmt(t/1000)+"."+Math.floor(t/100%10)}
+function swr(){clearInterval(sw.id);sw={t:0,on:0,id:null};swu()}
+function s_help(){const n=new Date();show(`${back("s_home()")}<h2>${T("guide")}</h2><div class="box">${esc(T("gt"))}</div><h2>${T("today")}</h2><div class="box">${n.toLocaleDateString(lang,{weekday:"long",year:"numeric",month:"long",day:"numeric"})}\n\n${T("hist")}</div>`)}
+function s_when(){const b=ST.get("bus");show(`${back("s_home()")}<label>${T("date")}<input id="dt" type="date" onchange="dd()"></label><div class="box" id="dr"></div>
+<h2>${T("bus")}</h2><label>${T("bl")}<input id="bl" value="${b?esc(b.l):""}"></label><label>${T("bt")}<input id="bt" type="time" value="${b?b.t:""}"></label><button onclick="saveBus()">${T("addb")}</button><div class="big" id="bo">${b?"":T("nob")}</div>
+<h2>${T("sp")}</h2><div class="row"><button onclick="listen()">🎤 ${T("listen")}</button><button onclick="$('#st').value=''">${T("clear")}</button></div><textarea id="st" rows="5" aria-live="polite"></textarea>`);busTick();tm=setInterval(busTick,1000)}
+function dd(){const v=$("#dt").value;if(!v)return;const d=Math.round((new Date(v+"T00:00")-new Date().setHours(0,0,0,0))/864e5);$("#dr").textContent=new Date(v+"T00:00").toLocaleDateString(lang,{dateStyle:"full"})+"\n"+(d>=0?"+":"")+d+" "+(lang=="tr"?"gün":lang=="de"?"Tage":"days")}
+function saveBus(){ST.set("bus",{l:$("#bl").value,t:$("#bt").value});busTick()}
+function busTick(){const b=ST.get("bus"),o=$("#bo");if(!b||!b.t||!o)return;const [h,m]=b.t.split(":"),t=new Date();t.setHours(h,m,0,0);if(t<new Date())t.setDate(t.getDate()+1);o.innerHTML=`<small>${esc(b.l)} · ${T("left")}</small><br>${fmt((t-new Date())/1000)}`}
+function listen(){const R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R){$("#st").value=T("spn");return}
+window.rec=new R();rec.lang={tr:"tr-TR",en:"en-US",de:"de-DE"}[lang];rec.continuous=true;rec.interimResults=true;
+rec.onresult=e=>{let s="";for(const r of e.results)s+=r[0].transcript+" ";$("#st").value=s};rec.onend=()=>{};rec.start()}
+function s_health(){const g=ST.get("gen",{}),a=ST.get("appt",[]),m=ST.get("med",[]);
+show(`${back("s_home()")}<h2>${T("appt")}</h2><input id="ad" type="datetime-local" aria-label="${T("ad")}"><input id="an" placeholder="${T("an")}" style="margin-top:6px"><button onclick="addA()">${T("adda")}</button>${a.map(x=>`<div class="box">${esc(x.d.replace("T"," "))} — ${esc(x.n)}</div>`).join("")}
+<h2>${T("med")}</h2><input id="mn" placeholder="${T("mn")}"><button onclick="addM()">${T("took")}</button>${m.slice(-6).reverse().map(x=>`<div class="box">${esc(x.n)} — ${new Date(x.t).toLocaleString(lang)}</div>`).join("")}
+<h2>${T("gen")}</h2>${[["age",T("age")],["w",T("w")],["h",T("h")],["sex",T("sex")],["bg",T("bl2")]].map(([k,l])=>`<label>${l}<input id="g_${k}" value="${esc(g[k]||"")}"></label>`).join("")}<button onclick="saveG()" style="margin-top:10px">${T("save")}</button>`)}
+function addA(){if(!$("#ad").value)return;const a=ST.get("appt",[]);a.push({d:$("#ad").value,n:$("#an").value});a.sort((x,y)=>x.d>y.d?1:-1);ST.set("appt",a);s_health()}
+function addM(){if(!$("#mn").value)return;const m=ST.get("med",[]);m.push({n:$("#mn").value,t:Date.now()});ST.set("med",m);s_health()}
+function saveG(){const g={};["age","w","h","sex","bg"].forEach(k=>g[k]=$("#g_"+k).value);ST.set("gen",g);alert(T("saved"))}
+const P={s_mode:"s_lang",s_issue:"s_mode",s_wait:"s_issue",s_home:"s_mode",s_qr:"s_home",s_time:"s_home",s_help:"s_home",s_when:"s_home",s_health:"s_home",s_dev:"s_mode"};
+const EX={en:"Exit",tr:"Çıkış Yap",de:"Beenden"};let cur="s_lang";
+function bar(){let n=$("#nav");if(!n){n=document.createElement("div");n.id="nav";document.body.appendChild(n)}
+n.innerHTML=cur=="s_lang"?"":`<button onclick="window[P[cur]]()">${T("back")}</button><button onclick="clr();mode='';s_lang()">${EX[lang]}</button>`}
+Object.keys(P).concat("s_lang").forEach(n=>{const f=window[n];window[n]=function(){cur=n;f.apply(this,arguments);bar()}});
+s_lang();
+</script></body></html>
