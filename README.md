@@ -1,2 +1,2 @@
 # DEREL-DEREL-Duyma-Engelli-Ogrenciler-icin-Elektronik-Levha
-DEREL, yani Duyma Engelli Öğrenciler için Elektronik Levha, "Duyma Emgelli Öğrenciler" in vakit, sağlık, sosyal yaşam, ulaşım gibi sektörlerde "Duyma Engelli Öğrenciler" i koruma ve fırsat eşitliliğini sağlamak amacıyla ilk ve tek ulaşım ışığı olacaktır.
+DEREL, yani Duyma Engelli Öğrenciler için Elektronik Levha, "Duyma Emgelli Öğrenciler" in vakit, sağlık, sosyal yaşam, ulaşım gibi sektörlerde "Duyma Engelli Öğrenciler" i koruma ve fırsat eşitliliğini sağlamak amacıyla ilk ve tek ulaşım ışığı olacaktır. Bu uygulama, duyma engelli insanların konuşmayı yazıya çevirme gibi özelliklerle beraber şu an onlinegdb.com sitesinde çalıştırılabilir ve gözlemlenebilir. VERSION: 0.1.0 BETA VERSİYON: 0.1.0
