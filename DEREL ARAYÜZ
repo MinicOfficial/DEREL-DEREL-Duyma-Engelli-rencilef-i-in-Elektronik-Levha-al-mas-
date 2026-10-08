@@ -85,6 +85,7 @@ function swgo(){if(sw.on){sw.on=0;sw.t+=Date.now()-sw.s;clearInterval(sw.id)}els
 function swu(){const t=sw.t+(sw.on?Date.now()-sw.s:0);$("#sw").textContent=fmt(t/1000)+"."+Math.floor(t/100%10)}
 function swr(){clearInterval(sw.id);sw={t:0,on:0,id:null};swu()}
 const EV={"10-6":{tr:"Amerikalı astronom Edwin Hubble, Andromeda Galaksisi'ni keşfetti.",en:"American astronomer Edwin Hubble discovered the Andromeda Galaxy.",de:"Der amerikanische Astronom Edwin Hubble entdeckte die Andromedagalaxie."},
+"10-9":{tr:"Birinci Dünya Savaşı'nda Belçika, Alman İmparatorluğu'nun eline geçti.",en:"In World War I, Belgium fell to the German Empire.",de:"Im Ersten Weltkrieg geriet Belgien unter die Kontrolle des Deutschen Kaiserreichs."},
 "10-29":{tr:"Cumhuriyet Bayramı (Resmî Tatil)",en:"Republic Day (Public Holiday)",de:"Tag der Republik (Feiertag)"},
 "11-10":{tr:"Atatürk'ü Anma Günü",en:"Atatürk Memorial Day",de:"Gedenktag für Atatürk"},
 "11-24":{tr:"Öğretmenler Günü",en:"Teachers' Day",de:"Tag der Lehrer"},
